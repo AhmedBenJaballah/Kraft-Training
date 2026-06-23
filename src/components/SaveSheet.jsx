@@ -2,6 +2,7 @@ export default function SaveSheet({ week, day, plan, date, onDateChange, onConfi
   return (
     <div className="overlay show" onClick={e => { if (e.currentTarget === e.target) onCancel(); }}>
       <div className="sheet">
+        <div className="sheet-handle" />
         <h3>Session speichern</h3>
         <p>Woche {week} · Tag {day} ({plan.label})</p>
         <label htmlFor="sheetDate">Datum des Trainings</label>

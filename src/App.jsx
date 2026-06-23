@@ -142,6 +142,9 @@ export default function App() {
       )}
       {view === 'train' && (
         <div className="bar">
+          <div className="bar-track">
+            <div className="bar-fill" style={{ width: totalSets > 0 ? `${Math.round(doneSets / totalSets * 100)}%` : '0%' }} />
+          </div>
           <div className="prog"><b>{doneSets}</b> / <span>{totalSets}</span> Sätze</div>
           <button className="save" onClick={openSheet}>Session speichern</button>
           <button className="reset" onClick={resetDay} title="Tag zurücksetzen">↺</button>

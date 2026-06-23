@@ -32,6 +32,7 @@ function SetRow({ idx, data, done, onFieldChange, onToggleDone }) {
 
 function ExerciseCard({ ex, week, log, prev, accent, rir, onSetField, onSetDone }) {
   const n = effSets(ex.sets, week);
+  const doneCount = Array.from({ length: n }, (_, i) => log[i]?.done).filter(Boolean).length;
   return (
     <div className="ex" style={{ '--accent': accent }}>
       <div className="ex-top">
@@ -43,6 +44,11 @@ function ExerciseCard({ ex, week, log, prev, accent, rir, onSetField, onSetDone 
           <div className="ex-target">{n} × {ex.reps}<br />{rir}</div>
           {prev && <div className="prev">zuletzt: {prev}</div>}
         </div>
+      </div>
+      <div className="ex-set-dots">
+        {Array.from({ length: n }, (_, i) => (
+          <span key={i} className={`ex-set-dot${log[i]?.done ? ' lit' : ''}`} />
+        ))}
       </div>
       <div className="sets">
         {Array.from({ length: n }, (_, s) => (
