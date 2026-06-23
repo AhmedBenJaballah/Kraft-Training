@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
@@ -15,7 +16,9 @@ import HistoryView from './components/HistoryView';
 import SaveSheet from './components/SaveSheet';
 import Toast from './components/Toast';
 
-export default function App() {
+export default function App({ mode, onToggleMode }) {
+  const theme = useTheme();
+  const dark = theme.palette.mode === 'dark';
   const [week, setWeek]     = useState(() => LS.get('kraft:lastWeek', 1));
   const [day, setDay]       = useState(() => LS.get('kraft:lastDay', 'A'));
   const [view, setView]     = useState('train');
@@ -124,6 +127,7 @@ export default function App() {
         week={week} day={day} view={view}
         onWeekChange={w => setWeek(w)}
         onViewToggle={() => switchView(view === 'train' ? 'history' : 'train')}
+        mode={mode} onToggleMode={onToggleMode}
       />
 
       {view === 'train' && (
@@ -154,9 +158,10 @@ export default function App() {
           elevation={0}
           sx={{
             position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 20,
-            bgcolor: 'rgba(10,15,30,0.92)',
+            bgcolor: dark ? 'rgba(10,15,30,0.92)' : 'rgba(244,244,248,0.92)',
             backdropFilter: 'blur(20px)',
-            borderTop: '1px solid rgba(255,255,255,0.08)',
+            borderTop: '1px solid',
+            borderColor: 'divider',
             backgroundImage: 'none',
             pb: 'env(safe-area-inset-bottom)',
           }}
@@ -173,7 +178,7 @@ export default function App() {
               },
             }}
           />
-          <Stack direction="row" alignItems="center" spacing={1} sx={{ px: 1.5, py: 0.875 }}>
+          <Stack direction="row" alignItems="center" spacing={0.875} sx={{ px: 1.25, py: 0.75 }}>
             <Box sx={{ flex: 1 }}>
               <Stack direction="row" alignItems="baseline" spacing={0.5}>
                 <Typography sx={{ fontFamily: 'DM Mono', fontSize: '1.375rem', fontWeight: 500, lineHeight: 1, color: 'text.primary' }}>
@@ -195,7 +200,7 @@ export default function App() {
               size="small"
               onClick={resetDay}
               title="Tag zurücksetzen"
-              sx={{ border: '1px solid rgba(255,255,255,0.10)', borderRadius: 2, width: 36, height: 36, color: 'text.secondary' }}
+              sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2, width: 34, height: 34, color: 'text.secondary' }}
             >
               <RestartAltIcon sx={{ fontSize: 18 }} />
             </IconButton>

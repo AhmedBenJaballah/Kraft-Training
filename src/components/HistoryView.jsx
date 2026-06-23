@@ -41,8 +41,8 @@ function CalendarView({ calMonth, selDay, history, onMonthChange, onSelDay }) {
   );
 
   return (
-    <Box sx={{ mx: 1.5, mt: 1.5, mb: 1, border: '1px solid', borderColor: 'divider', borderRadius: 2.5, bgcolor: 'background.paper', overflow: 'hidden' }}>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ px: 1.5, pt: 1.25, pb: 1 }}>
+    <Box sx={{ mx: 1.25, mt: 1.25, mb: 0.75, border: '1px solid', borderColor: 'divider', borderRadius: 2.5, bgcolor: 'background.paper', overflow: 'hidden' }}>
+      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ px: 1.25, pt: 1, pb: 0.875 }}>
         <NavBtn onClick={() => onMonthChange(new Date(y, m - 1, 1))}>‹</NavBtn>
         <Typography sx={{ fontFamily: 'DM Mono', fontSize: '0.8125rem', fontWeight: 500, letterSpacing: '.08em', color: 'text.primary' }}>
           {MON[m].slice(0, 3).toUpperCase()} {y}
@@ -50,7 +50,7 @@ function CalendarView({ calMonth, selDay, history, onMonthChange, onSelDay }) {
         <NavBtn onClick={() => onMonthChange(new Date(y, m + 1, 1))}>›</NavBtn>
       </Stack>
 
-      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', px: 0.5, pb: 0.75 }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', px: 0.375, pb: 0.625 }}>
         {WD.map(w => (
           <Typography key={w} variant="caption" align="center" sx={{ display: 'block', py: 0.5, fontSize: '0.6rem', fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: 'text.disabled' }}>
             {w}
@@ -102,10 +102,10 @@ function HistoryCard({ entry, onDelete }) {
   const hasValues = entry.ex.some(e => e.sets.some(s => s.kg || s.reps));
 
   return (
-    <Accordion sx={{ mx: 1.5, mb: 0.75 }}>
+    <Accordion sx={{ mx: 1.25, mb: 0.5 }}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon sx={{ fontSize: 16, color: 'text.disabled' }} />}
-        sx={{ px: 1.5, minHeight: '44px !important', '& .MuiAccordionSummary-content': { my: '8px !important', mr: 0.5 } }}
+        sx={{ px: 1.25, minHeight: '40px !important', '& .MuiAccordionSummary-content': { my: '7px !important', mr: 0.5 } }}
       >
         <Stack direction="row" alignItems="center" spacing={1} sx={{ width: '100%' }}>
           <Chip
@@ -128,7 +128,7 @@ function HistoryCard({ entry, onDelete }) {
           </Typography>
         </Stack>
       </AccordionSummary>
-      <AccordionDetails sx={{ px: 1.5, pt: 0, pb: 1.25 }}>
+      <AccordionDetails sx={{ px: 1.25, pt: 0, pb: 1 }}>
         {hasValues
           ? entry.ex.map(e => {
               const parts = e.sets.filter(s => s.kg || s.reps).map(s => `${s.kg || '–'}×${s.reps || '–'}`);
@@ -164,7 +164,7 @@ export default function HistoryView({ calMonth, selDay, history, onMonthChange, 
     <>
       <CalendarView calMonth={calMonth} selDay={selDay} history={history} onMonthChange={onMonthChange} onSelDay={onSelDay} />
 
-      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ px: 1.5, py: 0.5, minHeight: 28 }}>
+      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ px: 1.25, py: 0.375, minHeight: 26 }}>
         {selDay && (
           <>
             <Typography variant="caption" color="text.secondary">

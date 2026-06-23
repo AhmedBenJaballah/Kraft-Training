@@ -19,8 +19,8 @@ function SetRow({ idx, data, done, onFieldChange, onToggleDone, accent }) {
   return (
     <Box sx={{
       display: 'grid',
-      gridTemplateColumns: '18px 1fr 1fr 34px',
-      gap: '6px',
+      gridTemplateColumns: '16px 1fr 1fr 32px',
+      gap: '5px',
       alignItems: 'center',
       opacity: done ? 0.4 : 1,
       transition: 'opacity .2s',
@@ -74,11 +74,11 @@ function SetRow({ idx, data, done, onFieldChange, onToggleDone, accent }) {
         onClick={onToggleDone}
         aria-label="Satz erledigt"
         sx={{
-          width: 34, height: 34,
+          width: 32, height: 32,
           border: '1.5px solid',
           borderColor: done ? accent : 'divider',
           bgcolor: done ? accent : 'transparent',
-          borderRadius: '8px',
+          borderRadius: '7px',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           cursor: 'pointer', p: 0, flexShrink: 0,
           transition: 'border-color .15s, background-color .15s, transform .12s',
@@ -97,8 +97,8 @@ function ExerciseCard({ ex, week, log, prev, accent, rir, onSetField, onSetDone 
   const n = effSets(ex.sets, week);
 
   return (
-    <Card sx={{ mb: 0.75, position: 'relative', overflow: 'hidden', '&::before': { content: '""', position: 'absolute', top: 0, left: 0, right: 0, height: '2px', bgcolor: accent } }}>
-      <CardContent sx={{ p: 1.25, '&:last-child': { pb: 1.25 } }}>
+    <Card sx={{ mb: 0.625, position: 'relative', overflow: 'hidden', '&::before': { content: '""', position: 'absolute', top: 0, left: 0, right: 0, height: '2px', bgcolor: accent } }}>
+      <CardContent sx={{ p: 1, '&:last-child': { pb: 1 } }}>
         {/* Header */}
         <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={1}>
           <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -125,7 +125,7 @@ function ExerciseCard({ ex, week, log, prev, accent, rir, onSetField, onSetDone 
         </Stack>
 
         {/* Progress dots */}
-        <Stack direction="row" spacing={0.5} sx={{ mt: 1 }}>
+        <Stack direction="row" spacing={0.375} sx={{ mt: 0.75 }}>
           {Array.from({ length: n }, (_, i) => (
             <Box
               key={i}
@@ -138,7 +138,7 @@ function ExerciseCard({ ex, week, log, prev, accent, rir, onSetField, onSetDone 
         </Stack>
 
         {/* Sets */}
-        <Stack spacing={0.625} sx={{ mt: 1 }}>
+        <Stack spacing={0.5} sx={{ mt: 0.875 }}>
           {Array.from({ length: n }, (_, s) => (
             <SetRow
               key={s} idx={s}
@@ -161,14 +161,14 @@ export default function TrainView({ week, day, store, history, onDayChange, onSe
   return (
     <>
       {/* Day toggle */}
-      <Box sx={{ px: 1.5, pt: 1.25, pb: 0.75 }}>
+      <Box sx={{ px: 1.25, pt: 1, pb: 0.5 }}>
         <ToggleButtonGroup
           value={day}
           exclusive
           onChange={(_, v) => v && onDayChange(v)}
           fullWidth
           size="small"
-          sx={{ height: 44 }}
+          sx={{ height: 40 }}
         >
           {['A', 'B'].map(k => (
             <ToggleButton
@@ -196,7 +196,7 @@ export default function TrainView({ week, day, store, history, onDayChange, onSe
       </Box>
 
       {/* Exercise cards */}
-      <Box sx={{ px: 1.5, pb: 1 }}>
+      <Box sx={{ px: 1.25, pb: 0.75 }}>
         {plan.ex.map(ex => (
           <ExerciseCard
             key={ex.id} ex={ex} week={week}
@@ -211,22 +211,22 @@ export default function TrainView({ week, day, store, history, onDayChange, onSe
       </Box>
 
       {/* Tip */}
-      <Typography variant="caption" color="text.disabled" sx={{ display: 'block', px: 1.5, pb: 1.5, lineHeight: 1.6 }}>
+      <Typography variant="caption" color="text.disabled" sx={{ display: 'block', px: 1.25, pb: 1, lineHeight: 1.6 }}>
         Schaffst du bei allen Sätzen das obere Wdh-Ende sauber → nächstes Mal Gewicht hoch.
       </Typography>
 
       {/* FAQ */}
-      <Box sx={{ px: 1.5, pb: 2 }}>
+      <Box sx={{ px: 1.25, pb: 1.5 }}>
         <Accordion>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon sx={{ fontSize: 16, color: 'text.disabled' }} />}
-            sx={{ px: 1.5, minHeight: '40px !important', '& .MuiAccordionSummary-content': { my: '8px !important' } }}
+            sx={{ px: 1.25, minHeight: '38px !important', '& .MuiAccordionSummary-content': { my: '7px !important' } }}
           >
             <Typography variant="caption" sx={{ fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', color: 'text.disabled' }}>
               Warum dieser Plan?
             </Typography>
           </AccordionSummary>
-          <AccordionDetails sx={{ px: 1.5, pt: 0, pb: 1.5 }}>
+          <AccordionDetails sx={{ px: 1.25, pt: 0, pb: 1.25 }}>
             <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.7, display: 'block' }}>
               <Box component="span" sx={{ color: 'text.primary', fontWeight: 600 }}>Zug-lastig:</Box> Mehr Rücken/h. Delt als Brust – gegen Hyperkyphose.{' '}
               <Box component="span" sx={{ color: 'text.primary', fontWeight: 600 }}>Brust komplett:</Box> Schrägbank + Flachbank + Dips + Flys.{' '}
