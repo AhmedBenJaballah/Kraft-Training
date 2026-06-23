@@ -1,35 +1,65 @@
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { PLAN, WEEKS } from '../data/plan';
 
 export default function Header({ week, day, view, onWeekChange, onViewToggle }) {
   const isTrain = view === 'train';
-  const subline = isTrain ? `Woche ${week} · ${PLAN[day].label}` : 'Verlauf';
 
   return (
-    <div className="head">
-      <div className="brand">
-        <div className="l">
-          <h1>KRAFT</h1>
-          <span className="sub">{subline}</span>
-        </div>
-        <button className="toggle" onClick={onViewToggle}>
+    <AppBar
+      position="sticky"
+      sx={{ bgcolor: 'rgba(10,15,30,0.85)', backdropFilter: 'blur(20px)', backgroundImage: 'none' }}
+    >
+      <Toolbar variant="dense" sx={{ minHeight: 48, gap: 1, px: 1.5 }}>
+        <Box sx={{ flex: 1 }}>
+          <Typography sx={{ fontFamily: "'DM Mono', monospace", fontWeight: 500, fontSize: '1rem', letterSpacing: '.24em', color: 'text.primary', lineHeight: 1 }}>
+            KRAFT
+          </Typography>
+          <Typography variant="caption" color="text.disabled" sx={{ letterSpacing: '.10em', textTransform: 'uppercase', lineHeight: 1, display: 'block', mt: 0.25 }}>
+            {isTrain ? `W${week} · ${PLAN[day].label}` : 'Verlauf'}
+          </Typography>
+        </Box>
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={onViewToggle}
+          sx={{ borderColor: 'divider', color: 'text.secondary', fontSize: '0.75rem', py: 0.5, px: 1.5, minWidth: 0, borderRadius: 999 }}
+        >
           {isTrain ? 'Verlauf' : 'Training'}
-        </button>
-      </div>
+        </Button>
+      </Toolbar>
+
       {isTrain && (
-        <>
-          <div className="weeks">
+        <Box sx={{ px: 1.5, pb: 1 }}>
+          <ToggleButtonGroup
+            value={week}
+            exclusive
+            onChange={(_, v) => v && onWeekChange(v)}
+            fullWidth
+            size="small"
+            sx={{ height: 34 }}
+          >
             {[1, 2, 3, 4].map(w => (
-              <button key={w} className={`wk${w === week ? ' active' : ''}`} onClick={() => onWeekChange(w)}>
-                <span className="n">{w}</span>
-                <span className="lab">{WEEKS[w].name}</span>
-              </button>
+              <ToggleButton
+                key={w} value={w}
+                sx={{ flexDirection: 'column', gap: 0, py: 0, lineHeight: 1.1, flex: 1 }}
+              >
+                <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '0.9rem', fontWeight: 500 }}>{w}</span>
+                <span style={{ fontSize: '0.52rem', letterSpacing: '.05em', opacity: .7 }}>{WEEKS[w].name.toUpperCase()}</span>
+              </ToggleButton>
             ))}
-          </div>
-          <div className="focus">
-            <b>{WEEKS[week].rir}</b> · {WEEKS[week].note}
-          </div>
-        </>
+          </ToggleButtonGroup>
+          <Typography variant="caption" color="text.disabled" sx={{ display: 'block', mt: 0.75, lineHeight: 1.4 }}>
+            <Box component="span" sx={{ color: 'text.secondary', fontWeight: 600 }}>{WEEKS[week].rir}</Box>
+            {' · '}{WEEKS[week].note}
+          </Typography>
+        </Box>
       )}
-    </div>
+    </AppBar>
   );
 }

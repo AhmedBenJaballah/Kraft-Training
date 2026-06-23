@@ -1,88 +1,202 @@
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import CheckIcon from '@mui/icons-material/Check';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { PLAN, WEEKS } from '../data/plan';
 import { effSets, prevFor } from '../utils';
 
-function SetRow({ idx, data, done, onFieldChange, onToggleDone }) {
+function SetRow({ idx, data, done, onFieldChange, onToggleDone, accent }) {
   return (
-    <div className={`set${done ? ' done' : ''}`}>
-      <span className="set-n">{idx + 1}.</span>
-      <span className="fld">
-        <span className="u">kg</span>
-        <input
-          type="number" inputMode="decimal"
-          value={data?.kg ?? ''}
-          onChange={e => onFieldChange('kg', e.target.value)}
-        />
-      </span>
-      <span className="fld">
-        <span className="u">×</span>
-        <input
-          type="number" inputMode="numeric"
-          value={data?.reps ?? ''}
-          onChange={e => onFieldChange('reps', e.target.value)}
-        />
-      </span>
-      <button className={`chk${done ? ' on' : ''}`} aria-label="Satz erledigt" onClick={onToggleDone}>
-        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3">
-          <path d="M5 12l5 5L20 6" />
-        </svg>
-      </button>
-    </div>
+    <Box sx={{
+      display: 'grid',
+      gridTemplateColumns: '18px 1fr 1fr 34px',
+      gap: '6px',
+      alignItems: 'center',
+      opacity: done ? 0.4 : 1,
+      transition: 'opacity .2s',
+    }}>
+      <Typography
+        variant="caption"
+        align="center"
+        sx={{ fontFamily: 'DM Mono', color: 'text.disabled', lineHeight: 1, fontSize: '0.65rem' }}
+      >
+        {idx + 1}
+      </Typography>
+
+      <TextField
+        size="small"
+        type="number"
+        inputMode="decimal"
+        value={data?.kg ?? ''}
+        onChange={e => onFieldChange('kg', e.target.value)}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <Typography variant="caption" sx={{ fontFamily: 'DM Mono', color: 'text.disabled', fontSize: '0.65rem', userSelect: 'none' }}>
+                kg
+              </Typography>
+            </InputAdornment>
+          ),
+        }}
+        sx={{ '& .MuiOutlinedInput-input': { pl: 0.25 } }}
+      />
+
+      <TextField
+        size="small"
+        type="number"
+        inputMode="numeric"
+        value={data?.reps ?? ''}
+        onChange={e => onFieldChange('reps', e.target.value)}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <Typography variant="caption" sx={{ fontFamily: 'DM Mono', color: 'text.disabled', fontSize: '0.65rem', userSelect: 'none' }}>
+                ×
+              </Typography>
+            </InputAdornment>
+          ),
+        }}
+        sx={{ '& .MuiOutlinedInput-input': { pl: 0.25 } }}
+      />
+
+      <Box
+        component="button"
+        onClick={onToggleDone}
+        aria-label="Satz erledigt"
+        sx={{
+          width: 34, height: 34,
+          border: '1.5px solid',
+          borderColor: done ? accent : 'divider',
+          bgcolor: done ? accent : 'transparent',
+          borderRadius: '8px',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          cursor: 'pointer', p: 0, flexShrink: 0,
+          transition: 'border-color .15s, background-color .15s, transform .12s',
+          '&:active': { transform: 'scale(.86)' },
+        }}
+      >
+        {done && (
+          <CheckIcon sx={{ fontSize: 14, color: accent === '#34D399' ? '#0A0F1E' : '#fff' }} />
+        )}
+      </Box>
+    </Box>
   );
 }
 
 function ExerciseCard({ ex, week, log, prev, accent, rir, onSetField, onSetDone }) {
   const n = effSets(ex.sets, week);
-  const doneCount = Array.from({ length: n }, (_, i) => log[i]?.done).filter(Boolean).length;
+
   return (
-    <div className="ex" style={{ '--accent': accent }}>
-      <div className="ex-top">
-        <div>
-          <div className="ex-name">{ex.name}</div>
-          <div className="ex-region">{ex.region}</div>
-        </div>
-        <div>
-          <div className="ex-target">{n} × {ex.reps}<br />{rir}</div>
-          {prev && <div className="prev">zuletzt: {prev}</div>}
-        </div>
-      </div>
-      <div className="ex-set-dots">
-        {Array.from({ length: n }, (_, i) => (
-          <span key={i} className={`ex-set-dot${log[i]?.done ? ' lit' : ''}`} />
-        ))}
-      </div>
-      <div className="sets">
-        {Array.from({ length: n }, (_, s) => (
-          <SetRow
-            key={s} idx={s}
-            data={log[s]}
-            done={!!log[s]?.done}
-            onFieldChange={(field, value) => onSetField(ex.id, s, field, value)}
-            onToggleDone={() => onSetDone(ex.id, s)}
-          />
-        ))}
-      </div>
-    </div>
+    <Card sx={{ mb: 0.75, position: 'relative', overflow: 'hidden', '&::before': { content: '""', position: 'absolute', top: 0, left: 0, right: 0, height: '2px', bgcolor: accent } }}>
+      <CardContent sx={{ p: 1.25, '&:last-child': { pb: 1.25 } }}>
+        {/* Header */}
+        <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={1}>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Typography sx={{ fontWeight: 700, fontSize: '0.9375rem', lineHeight: 1.2, letterSpacing: '-0.01em', color: 'text.primary' }}>
+              {ex.name}
+            </Typography>
+            <Typography variant="caption" color="text.disabled" sx={{ display: 'block', mt: 0.25 }}>
+              {ex.region}
+            </Typography>
+          </Box>
+          <Box sx={{ textAlign: 'right', flexShrink: 0 }}>
+            <Typography sx={{ fontFamily: 'DM Mono', fontSize: '0.75rem', color: accent, lineHeight: 1.5 }}>
+              {n}×{ex.reps}
+            </Typography>
+            <Typography sx={{ fontFamily: 'DM Mono', fontSize: '0.65rem', color: 'text.disabled', display: 'block' }}>
+              {rir}
+            </Typography>
+            {prev && (
+              <Typography sx={{ fontFamily: 'DM Mono', fontSize: '0.6rem', color: 'text.disabled', display: 'block', mt: 0.25 }}>
+                ↑ {prev}
+              </Typography>
+            )}
+          </Box>
+        </Stack>
+
+        {/* Progress dots */}
+        <Stack direction="row" spacing={0.5} sx={{ mt: 1 }}>
+          {Array.from({ length: n }, (_, i) => (
+            <Box
+              key={i}
+              sx={{
+                flex: 1, height: '2px', borderRadius: 999,
+                bgcolor: log[i]?.done ? accent : 'rgba(255,255,255,0.09)',
+              }}
+            />
+          ))}
+        </Stack>
+
+        {/* Sets */}
+        <Stack spacing={0.625} sx={{ mt: 1 }}>
+          {Array.from({ length: n }, (_, s) => (
+            <SetRow
+              key={s} idx={s}
+              data={log[s]}
+              done={!!log[s]?.done}
+              accent={accent}
+              onFieldChange={(field, value) => onSetField(ex.id, s, field, value)}
+              onToggleDone={() => onSetDone(ex.id, s)}
+            />
+          ))}
+        </Stack>
+      </CardContent>
+    </Card>
   );
 }
 
 export default function TrainView({ week, day, store, history, onDayChange, onSetField, onSetDone }) {
   const plan = PLAN[day];
+
   return (
     <>
-      <div className="days">
-        {['A', 'B'].map(k => (
-          <button
-            key={k}
-            className={`day${k === day ? ' active' : ''}`}
-            data-d={k}
-            onClick={() => onDayChange(k)}
-          >
-            <div className="t">{k} · {PLAN[k].label}</div>
-            <div className="s">{PLAN[k].sub}</div>
-          </button>
-        ))}
-      </div>
-      <div className="list">
+      {/* Day toggle */}
+      <Box sx={{ px: 1.5, pt: 1.25, pb: 0.75 }}>
+        <ToggleButtonGroup
+          value={day}
+          exclusive
+          onChange={(_, v) => v && onDayChange(v)}
+          fullWidth
+          size="small"
+          sx={{ height: 44 }}
+        >
+          {['A', 'B'].map(k => (
+            <ToggleButton
+              key={k} value={k}
+              sx={{
+                flex: 1,
+                flexDirection: 'column',
+                gap: 0, lineHeight: 1.2, py: 0.5,
+                '&.Mui-selected': {
+                  bgcolor: `${PLAN[k].accent}1A`,
+                  color: PLAN[k].accent,
+                  borderColor: `${PLAN[k].accent}40`,
+                },
+              }}
+            >
+              <Typography sx={{ fontWeight: 800, fontSize: '0.8125rem', letterSpacing: '-0.01em', lineHeight: 1.1 }}>
+                {k} · {PLAN[k].label}
+              </Typography>
+              <Typography sx={{ fontSize: '0.6rem', opacity: .65, letterSpacing: '.02em' }}>
+                {PLAN[k].sub}
+              </Typography>
+            </ToggleButton>
+          ))}
+        </ToggleButtonGroup>
+      </Box>
+
+      {/* Exercise cards */}
+      <Box sx={{ px: 1.5, pb: 1 }}>
         {plan.ex.map(ex => (
           <ExerciseCard
             key={ex.id} ex={ex} week={week}
@@ -94,19 +208,33 @@ export default function TrainView({ week, day, store, history, onDayChange, onSe
             onSetDone={onSetDone}
           />
         ))}
-      </div>
-      <div className="note">
-        Tipp: Schaffst du bei <b>allen</b> Sätzen das obere Wdh-Ende sauber → nächstes Mal Gewicht hoch. Mit „Session speichern" wählst du das Datum und es landet im Verlauf.
-      </div>
-      <details>
-        <summary>Warum dieser Plan?</summary>
-        <div className="info">
-          <b>Zug-lastig:</b> Etwas mehr Rücken/hinterer Delt als Brust – gegen die Hyperkyphose.<br /><br />
-          <b>Brust komplett:</b> Schrägbank (oben) + Flachbank (Mitte) + Dips (unten) + Flys (Dehnung).<br /><br />
-          <b>4-Wochen-Logik:</b> W1 einpegeln → W2 mehr Wdh → W3 schwerer → W4 Deload.<br /><br />
-          <b>Skoliose:</b> Seitstütz beidseitig gleich, einseitige Übungen kontrolliert.
-        </div>
-      </details>
+      </Box>
+
+      {/* Tip */}
+      <Typography variant="caption" color="text.disabled" sx={{ display: 'block', px: 1.5, pb: 1.5, lineHeight: 1.6 }}>
+        Schaffst du bei allen Sätzen das obere Wdh-Ende sauber → nächstes Mal Gewicht hoch.
+      </Typography>
+
+      {/* FAQ */}
+      <Box sx={{ px: 1.5, pb: 2 }}>
+        <Accordion>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon sx={{ fontSize: 16, color: 'text.disabled' }} />}
+            sx={{ px: 1.5, minHeight: '40px !important', '& .MuiAccordionSummary-content': { my: '8px !important' } }}
+          >
+            <Typography variant="caption" sx={{ fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', color: 'text.disabled' }}>
+              Warum dieser Plan?
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails sx={{ px: 1.5, pt: 0, pb: 1.5 }}>
+            <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.7, display: 'block' }}>
+              <Box component="span" sx={{ color: 'text.primary', fontWeight: 600 }}>Zug-lastig:</Box> Mehr Rücken/h. Delt als Brust – gegen Hyperkyphose.{' '}
+              <Box component="span" sx={{ color: 'text.primary', fontWeight: 600 }}>Brust komplett:</Box> Schrägbank + Flachbank + Dips + Flys.{' '}
+              <Box component="span" sx={{ color: 'text.primary', fontWeight: 600 }}>4-Wochen-Logik:</Box> W1 einpegeln → W2 Wdh+ → W3 Gewicht+ → W4 Deload.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+      </Box>
     </>
   );
 }

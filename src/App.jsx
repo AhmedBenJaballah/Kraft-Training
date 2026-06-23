@@ -1,4 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import LinearProgress from '@mui/material/LinearProgress';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import { PLAN } from './data/plan';
 import { LS, pad, effSets } from './utils';
 import Header from './components/Header';
@@ -8,24 +16,21 @@ import SaveSheet from './components/SaveSheet';
 import Toast from './components/Toast';
 
 export default function App() {
-  const [week, setWeek] = useState(() => LS.get('kraft:lastWeek', 1));
-  const [day, setDay] = useState(() => LS.get('kraft:lastDay', 'A'));
-  const [view, setView] = useState('train');
-  const [store, setStore] = useState(() => LS.get(`kraft:log:w${LS.get('kraft:lastWeek', 1)}${LS.get('kraft:lastDay', 'A')}`, {}));
+  const [week, setWeek]     = useState(() => LS.get('kraft:lastWeek', 1));
+  const [day, setDay]       = useState(() => LS.get('kraft:lastDay', 'A'));
+  const [view, setView]     = useState('train');
+  const [store, setStore]   = useState(() => LS.get(`kraft:log:w${LS.get('kraft:lastWeek', 1)}${LS.get('kraft:lastDay', 'A')}`, {}));
   const [history, setHistory] = useState(() => LS.get('kraft:history', []));
   const [calMonth, setCalMonth] = useState(() => new Date());
   const [selDay, setSelDay] = useState(null);
   const [showSheet, setShowSheet] = useState(false);
   const [sheetDate, setSheetDate] = useState('');
-  const [toast, setToast] = useState(null);
+  const [toast, setToast]   = useState(null);
   const toastTimer = useRef(null);
 
   useEffect(() => { LS.set('kraft:lastWeek', week); }, [week]);
   useEffect(() => { LS.set('kraft:lastDay', day); }, [day]);
-
-  useEffect(() => {
-    setStore(LS.get(`kraft:log:w${week}${day}`, {}));
-  }, [week, day]);
+  useEffect(() => { setStore(LS.get(`kraft:log:w${week}${day}`, {})); }, [week, day]);
 
   function saveStore(newStore) {
     setStore(newStore);
@@ -106,17 +111,12 @@ export default function App() {
     showToast('Tag zurückgesetzt');
   }
 
-  function deleteHistoryEntry(id) {
-    if (!confirm('Diesen Eintrag löschen?')) return;
-    const newHist = history.filter(h => h.id !== id);
-    setHistory(newHist);
-    LS.set('kraft:history', newHist);
-  }
-
   function switchView(v) {
     setView(v);
     if (v === 'history') { setCalMonth(new Date()); setSelDay(null); }
   }
+
+  const pct = totalSets > 0 ? Math.round(doneSets / totalSets * 100) : 0;
 
   return (
     <>
@@ -125,6 +125,7 @@ export default function App() {
         onWeekChange={w => setWeek(w)}
         onViewToggle={() => switchView(view === 'train' ? 'history' : 'train')}
       />
+
       {view === 'train' && (
         <TrainView
           week={week} day={day} store={store} history={history}
@@ -133,31 +134,83 @@ export default function App() {
           onSetDone={handleSetDone}
         />
       )}
+
       {view === 'history' && (
         <HistoryView
           calMonth={calMonth} selDay={selDay} history={history}
           onMonthChange={setCalMonth} onSelDay={setSelDay}
-          onDelete={deleteHistoryEntry}
+          onDelete={id => {
+            if (!confirm('Diesen Eintrag löschen?')) return;
+            const newHist = history.filter(h => h.id !== id);
+            setHistory(newHist);
+            LS.set('kraft:history', newHist);
+          }}
         />
       )}
+
+      {/* Bottom action bar */}
       {view === 'train' && (
-        <div className="bar">
-          <div className="bar-track">
-            <div className="bar-fill" style={{ width: totalSets > 0 ? `${Math.round(doneSets / totalSets * 100)}%` : '0%' }} />
-          </div>
-          <div className="prog"><b>{doneSets}</b> / <span>{totalSets}</span> Sätze</div>
-          <button className="save" onClick={openSheet}>Session speichern</button>
-          <button className="reset" onClick={resetDay} title="Tag zurücksetzen">↺</button>
-        </div>
+        <Paper
+          elevation={0}
+          sx={{
+            position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 20,
+            bgcolor: 'rgba(10,15,30,0.92)',
+            backdropFilter: 'blur(20px)',
+            borderTop: '1px solid rgba(255,255,255,0.08)',
+            backgroundImage: 'none',
+            pb: 'env(safe-area-inset-bottom)',
+          }}
+        >
+          <LinearProgress
+            variant="determinate"
+            value={pct}
+            sx={{
+              height: 2, borderRadius: 0,
+              bgcolor: 'rgba(255,255,255,0.07)',
+              '& .MuiLinearProgress-bar': {
+                background: 'linear-gradient(90deg, #818CF8, #34D399)',
+                borderRadius: 0,
+              },
+            }}
+          />
+          <Stack direction="row" alignItems="center" spacing={1} sx={{ px: 1.5, py: 0.875 }}>
+            <Box sx={{ flex: 1 }}>
+              <Stack direction="row" alignItems="baseline" spacing={0.5}>
+                <Typography sx={{ fontFamily: 'DM Mono', fontSize: '1.375rem', fontWeight: 500, lineHeight: 1, color: 'text.primary' }}>
+                  {doneSets}
+                </Typography>
+                <Typography variant="caption" color="text.disabled">
+                  / {totalSets} Sätze
+                </Typography>
+              </Stack>
+            </Box>
+            <Button
+              variant="contained"
+              onClick={openSheet}
+              sx={{ borderRadius: 2.5, px: 2, fontSize: '0.875rem' }}
+            >
+              Speichern
+            </Button>
+            <IconButton
+              size="small"
+              onClick={resetDay}
+              title="Tag zurücksetzen"
+              sx={{ border: '1px solid rgba(255,255,255,0.10)', borderRadius: 2, width: 36, height: 36, color: 'text.secondary' }}
+            >
+              <RestartAltIcon sx={{ fontSize: 18 }} />
+            </IconButton>
+          </Stack>
+        </Paper>
       )}
-      {showSheet && (
-        <SaveSheet
-          week={week} day={day} plan={plan}
-          date={sheetDate} onDateChange={setSheetDate}
-          onConfirm={confirmSave} onCancel={() => setShowSheet(false)}
-        />
-      )}
-      {toast && <Toast msg={toast} />}
+
+      <SaveSheet
+        open={showSheet}
+        week={week} day={day} plan={plan}
+        date={sheetDate} onDateChange={setSheetDate}
+        onConfirm={confirmSave} onCancel={() => setShowSheet(false)}
+      />
+
+      <Toast msg={toast} />
     </>
   );
 }

@@ -2,7 +2,7 @@ export const PLAN = {
   A: {
     label: 'Zug',
     sub: 'Rücken · Bizeps · h. Delt',
-    accent: 'var(--olive)',
+    accent: '#818CF8',
     ex: [
       { id: 'pullup', name: 'Klimmzüge', region: 'Lats · Breite', sets: 4, reps: '6–10' },
       { id: 'row', name: 'Einarmiges KH-Rudern', region: 'Mittlerer Rücken · Dicke', sets: 3, reps: '8–12' },
@@ -17,7 +17,7 @@ export const PLAN = {
   B: {
     label: 'Druck',
     sub: 'Brust · Trizeps · Schulter',
-    accent: 'var(--terra)',
+    accent: '#34D399',
     ex: [
       { id: 'incline', name: 'Schrägbank-KH-Drücken', region: 'Obere Brust', sets: 3, reps: '8–12' },
       { id: 'flat', name: 'Flachbank-KH-Drücken', region: 'Mittlere Brust', sets: 3, reps: '8–12' },

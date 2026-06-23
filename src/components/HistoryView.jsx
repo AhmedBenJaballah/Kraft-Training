@@ -1,4 +1,12 @@
-import { useState } from 'react';
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { WD, MON } from '../data/plan';
 import { pad, dayKey } from '../utils';
 
@@ -13,74 +21,138 @@ function CalendarView({ calMonth, selDay, history, onMonthChange, onSelDay }) {
   const daysInMonth = new Date(y, m + 1, 0).getDate();
   const todayK = dayKey(Date.now());
 
+  const NavBtn = ({ children, onClick }) => (
+    <Box
+      component="button"
+      onClick={onClick}
+      sx={{
+        width: 28, height: 28,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        border: '1px solid', borderColor: 'divider',
+        borderRadius: '7px', bgcolor: 'transparent',
+        color: 'text.secondary', fontSize: '1rem',
+        cursor: 'pointer', lineHeight: 1,
+        transition: 'transform .1s',
+        '&:active': { transform: 'scale(.88)' },
+      }}
+    >
+      {children}
+    </Box>
+  );
+
   return (
-    <div className="cal">
-      <div className="cal-head">
-        <button className="cal-nav" onClick={() => onMonthChange(new Date(y, m - 1, 1))}>‹</button>
-        <div className="cal-title">{MON[m]} {y}</div>
-        <button className="cal-nav" onClick={() => onMonthChange(new Date(y, m + 1, 1))}>›</button>
-      </div>
-      <div className="cal-grid">
-        {WD.map(w => <div key={w} className="cal-wd">{w}</div>)}
-        {Array.from({ length: offset }, (_, i) => <div key={`e${i}`} className="cal-cell empty" />)}
+    <Box sx={{ mx: 1.5, mt: 1.5, mb: 1, border: '1px solid', borderColor: 'divider', borderRadius: 2.5, bgcolor: 'background.paper', overflow: 'hidden' }}>
+      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ px: 1.5, pt: 1.25, pb: 1 }}>
+        <NavBtn onClick={() => onMonthChange(new Date(y, m - 1, 1))}>‹</NavBtn>
+        <Typography sx={{ fontFamily: 'DM Mono', fontSize: '0.8125rem', fontWeight: 500, letterSpacing: '.08em', color: 'text.primary' }}>
+          {MON[m].slice(0, 3).toUpperCase()} {y}
+        </Typography>
+        <NavBtn onClick={() => onMonthChange(new Date(y, m + 1, 1))}>›</NavBtn>
+      </Stack>
+
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', px: 0.5, pb: 0.75 }}>
+        {WD.map(w => (
+          <Typography key={w} variant="caption" align="center" sx={{ display: 'block', py: 0.5, fontSize: '0.6rem', fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: 'text.disabled' }}>
+            {w}
+          </Typography>
+        ))}
+        {Array.from({ length: offset }, (_, i) => <Box key={`e${i}`} />)}
         {Array.from({ length: daysInMonth }, (_, i) => {
           const d = i + 1;
           const k = `${y}-${pad(m + 1)}-${pad(d)}`;
           const types = [...new Set(byDay[k] || [])];
-          const cls = ['cal-cell', k === todayK ? 'today' : '', k === selDay ? 'sel' : ''].filter(Boolean).join(' ');
+          const isToday = k === todayK;
+          const isSel = k === selDay;
           return (
-            <div key={k} className={cls} onClick={() => onSelDay(selDay === k ? null : k)}>
-              <span>{d}</span>
-              <span className="dots">
-                {types.slice(0, 2).map((x, i) => <span key={i} className={`dot ${x}`} />)}
-              </span>
-            </div>
+            <Box
+              key={k}
+              onClick={() => onSelDay(selDay === k ? null : k)}
+              sx={{
+                aspectRatio: 1,
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                borderRadius: 1.5, cursor: 'pointer',
+                bgcolor: isSel ? 'text.primary' : 'transparent',
+                outline: isToday ? '1.5px solid' : 'none',
+                outlineColor: 'primary.main',
+                outlineOffset: -1.5,
+                transition: 'background-color .12s',
+                '&:active': { opacity: .7 },
+              }}
+            >
+              <Typography sx={{ fontFamily: 'DM Mono', fontSize: '0.75rem', lineHeight: 1, fontWeight: isToday ? 700 : 400, color: isSel ? 'background.default' : isToday ? 'primary.main' : 'text.primary' }}>
+                {d}
+              </Typography>
+              <Stack direction="row" spacing={0.25} sx={{ mt: 0.25, height: 4 }}>
+                {types.slice(0, 2).map((x, i) => (
+                  <Box key={i} sx={{ width: 4, height: 4, borderRadius: '50%', bgcolor: x === 'A' ? (isSel ? 'rgba(129,140,248,.5)' : '#818CF8') : (isSel ? 'rgba(52,211,153,.5)' : '#34D399') }} />
+                ))}
+              </Stack>
+            </Box>
           );
         })}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
 
 function HistoryCard({ entry, onDelete }) {
-  const [open, setOpen] = useState(false);
   const d = new Date(entry.ts);
-  const dateStr = d.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
-  const timeStr = d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr';
+  const dateStr = d.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: 'short' });
+  const timeStr = d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
   const hasValues = entry.ex.some(e => e.sets.some(s => s.kg || s.reps));
 
   return (
-    <div className="h-card">
-      <div className="h-head" onClick={() => setOpen(!open)}>
-        <span className={`h-badge ${entry.day}`}>{entry.day} · {entry.label}</span>
-        <div className="h-date">
-          <div className="d">{dateStr}</div>
-          <div className="m">Woche {entry.week} · {timeStr}</div>
-        </div>
-        <span className="h-sum">{entry.done}/{entry.total}</span>
-      </div>
-      <div className={`h-body${open ? ' open' : ''}`}>
+    <Accordion sx={{ mx: 1.5, mb: 0.75 }}>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon sx={{ fontSize: 16, color: 'text.disabled' }} />}
+        sx={{ px: 1.5, minHeight: '44px !important', '& .MuiAccordionSummary-content': { my: '8px !important', mr: 0.5 } }}
+      >
+        <Stack direction="row" alignItems="center" spacing={1} sx={{ width: '100%' }}>
+          <Chip
+            label={`${entry.day} · ${entry.label}`}
+            size="small"
+            sx={{
+              height: 20, fontSize: '0.6rem', fontWeight: 700,
+              bgcolor: entry.day === 'A' ? 'rgba(129,140,248,.12)' : 'rgba(52,211,153,.12)',
+              color: entry.day === 'A' ? '#818CF8' : '#34D399',
+              border: '1px solid',
+              borderColor: entry.day === 'A' ? 'rgba(129,140,248,.25)' : 'rgba(52,211,153,.25)',
+            }}
+          />
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.primary', display: 'block', lineHeight: 1.2 }}>{dateStr}</Typography>
+            <Typography variant="caption" color="text.disabled" sx={{ display: 'block', fontSize: '0.625rem' }}>W{entry.week} · {timeStr}</Typography>
+          </Box>
+          <Typography sx={{ fontFamily: 'DM Mono', fontSize: '0.75rem', color: 'text.secondary', flexShrink: 0 }}>
+            {entry.done}/{entry.total}
+          </Typography>
+        </Stack>
+      </AccordionSummary>
+      <AccordionDetails sx={{ px: 1.5, pt: 0, pb: 1.25 }}>
         {hasValues
           ? entry.ex.map(e => {
               const parts = e.sets.filter(s => s.kg || s.reps).map(s => `${s.kg || '–'}×${s.reps || '–'}`);
               if (!parts.length) return null;
               return (
-                <div key={e.id} className="h-ex">
-                  <div className="nm">{e.name}</div>
-                  <div className="ss">{parts.join('  ·  ')}</div>
-                </div>
+                <Box key={e.id} sx={{ borderTop: '1px solid', borderColor: 'divider', pt: 0.75, pb: 0.5 }}>
+                  <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.primary', display: 'block' }}>{e.name}</Typography>
+                  <Typography sx={{ fontFamily: 'DM Mono', fontSize: '0.6875rem', color: 'text.secondary', display: 'block', mt: 0.25, lineHeight: 1.55 }}>{parts.join('  ·  ')}</Typography>
+                </Box>
               );
             })
-          : <div className="h-ex"><div className="ss">Keine Werte eingetragen.</div></div>
+          : <Typography variant="caption" color="text.disabled">Keine Werte eingetragen.</Typography>
         }
-        <button
-          className="h-del"
+        <Button
+          size="small"
+          color="error"
+          variant="text"
           onClick={ev => { ev.stopPropagation(); onDelete(entry.id); }}
+          sx={{ mt: 1, fontSize: '0.6875rem', textTransform: 'none', px: 1, py: 0.25, borderRadius: 999, minWidth: 0 }}
         >
           Eintrag löschen
-        </button>
-      </div>
-    </div>
+        </Button>
+      </AccordionDetails>
+    </Accordion>
   );
 }
 
@@ -90,27 +162,30 @@ export default function HistoryView({ calMonth, selDay, history, onMonthChange, 
 
   return (
     <>
-      <CalendarView
-        calMonth={calMonth} selDay={selDay} history={history}
-        onMonthChange={onMonthChange} onSelDay={onSelDay}
-      />
-      <div className="filterbar">
+      <CalendarView calMonth={calMonth} selDay={selDay} history={history} onMonthChange={onMonthChange} onSelDay={onSelDay} />
+
+      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ px: 1.5, py: 0.5, minHeight: 28 }}>
         {selDay && (
           <>
-            <span>
-              Gefiltert: {new Date(selDay + 'T12:00:00').toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' })}
-            </span>
-            <button onClick={() => onSelDay(null)}>Alle anzeigen</button>
+            <Typography variant="caption" color="text.secondary">
+              {new Date(selDay + 'T12:00:00').toLocaleDateString('de-DE', { day: '2-digit', month: 'long' })}
+            </Typography>
+            <Button size="small" variant="text" onClick={() => onSelDay(null)} sx={{ fontSize: '0.6875rem', textTransform: 'none', color: 'text.secondary', py: 0, minWidth: 0 }}>
+              Alle
+            </Button>
           </>
         )}
-      </div>
+      </Stack>
+
       {filtered.length === 0 ? (
-        <div className="h-empty">
-          {selDay
-            ? 'Keine Session an diesem Tag.'
-            : <>Noch keine Sessions gespeichert.<br />Trag dein Training ein und tipp auf <b>„Session speichern"</b>.</>
-          }
-        </div>
+        <Box sx={{ textAlign: 'center', py: 6, px: 3 }}>
+          <Typography variant="body2" color="text.disabled" sx={{ lineHeight: 1.7 }}>
+            {selDay
+              ? 'Keine Session an diesem Tag.'
+              : <>'Noch keine Sessions gespeichert.<br />Trag dein Training ein und tippe auf{' '}<Box component="span" sx={{ color: 'text.secondary', fontWeight: 600 }}>„Speichern"</Box>.</>
+            }
+          </Typography>
+        </Box>
       ) : (
         filtered.map(h => <HistoryCard key={h.id} entry={h} onDelete={onDelete} />)
       )}
