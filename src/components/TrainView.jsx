@@ -170,7 +170,7 @@ export default function TrainView({ week, day, store, history, onDayChange, onSe
           size="small"
           sx={{ height: 40 }}
         >
-          {['A', 'B'].map(k => (
+          {Object.keys(PLAN).map(k => (
             <ToggleButton
               key={k} value={k}
               sx={{
@@ -228,8 +228,8 @@ export default function TrainView({ week, day, store, history, onDayChange, onSe
           </AccordionSummary>
           <AccordionDetails sx={{ px: 1.25, pt: 0, pb: 1.25 }}>
             <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.7, display: 'block' }}>
-              <Box component="span" sx={{ color: 'text.primary', fontWeight: 600 }}>Zug-lastig:</Box> Mehr Rücken/h. Delt als Brust – gegen Hyperkyphose.{' '}
-              <Box component="span" sx={{ color: 'text.primary', fontWeight: 600 }}>Brust komplett:</Box> Schrägbank + Flachbank + Dips + Flys.{' '}
+              <Box component="span" sx={{ color: 'text.primary', fontWeight: 600 }}>Skoliose & Hyperkyphose:</Box> Face Pull + Y-T-Raise als Korrektiv. Kein Flat-Bench, kein OHP, keine Dips.{' '}
+              <Box component="span" sx={{ color: 'text.primary', fontWeight: 600 }}>Beine (Tag B):</Box> Goblet + Bulgaren + Hüftstrecken – wichtigster Block für Körperzusammensetzung.{' '}
               <Box component="span" sx={{ color: 'text.primary', fontWeight: 600 }}>4-Wochen-Logik:</Box> W1 einpegeln → W2 Wdh+ → W3 Gewicht+ → W4 Deload.
             </Typography>
           </AccordionDetails>
