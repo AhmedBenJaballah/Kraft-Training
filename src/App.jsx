@@ -171,7 +171,7 @@ export default function App({ mode, onToggleMode }) {
             value={pct}
             sx={{
               height: 2, borderRadius: 0,
-              bgcolor: 'rgba(255,255,255,0.07)',
+              bgcolor: 'divider',
               '& .MuiLinearProgress-bar': {
                 background: 'linear-gradient(90deg, #818CF8, #34D399)',
                 borderRadius: 0,

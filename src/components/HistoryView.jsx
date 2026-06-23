@@ -7,7 +7,7 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { WD, MON } from '../data/plan';
+import { PLAN, WD, MON } from '../data/plan';
 import { pad, dayKey } from '../utils';
 
 function CalendarView({ calMonth, selDay, history, onMonthChange, onSelDay }) {
@@ -83,9 +83,10 @@ function CalendarView({ calMonth, selDay, history, onMonthChange, onSelDay }) {
                 {d}
               </Typography>
               <Stack direction="row" spacing={0.25} sx={{ mt: 0.25, height: 4 }}>
-                {types.slice(0, 2).map((x, i) => (
-                  <Box key={i} sx={{ width: 4, height: 4, borderRadius: '50%', bgcolor: x === 'A' ? (isSel ? 'rgba(129,140,248,.5)' : '#818CF8') : (isSel ? 'rgba(52,211,153,.5)' : '#34D399') }} />
-                ))}
+                {types.slice(0, 3).map((x, i) => {
+                  const ac = PLAN[x]?.accent || '#818CF8';
+                  return <Box key={i} sx={{ width: 4, height: 4, borderRadius: '50%', bgcolor: isSel ? `${ac}80` : ac }} />;
+                })}
               </Stack>
             </Box>
           );
@@ -108,17 +109,22 @@ function HistoryCard({ entry, onDelete }) {
         sx={{ px: 1.25, minHeight: '40px !important', '& .MuiAccordionSummary-content': { my: '7px !important', mr: 0.5 } }}
       >
         <Stack direction="row" alignItems="center" spacing={1} sx={{ width: '100%' }}>
-          <Chip
-            label={`${entry.day} · ${entry.label}`}
-            size="small"
-            sx={{
-              height: 20, fontSize: '0.6rem', fontWeight: 700,
-              bgcolor: entry.day === 'A' ? 'rgba(129,140,248,.12)' : 'rgba(52,211,153,.12)',
-              color: entry.day === 'A' ? '#818CF8' : '#34D399',
-              border: '1px solid',
-              borderColor: entry.day === 'A' ? 'rgba(129,140,248,.25)' : 'rgba(52,211,153,.25)',
-            }}
-          />
+          {(() => {
+            const ac = PLAN[entry.day]?.accent || '#818CF8';
+            return (
+              <Chip
+                label={`${entry.day} · ${entry.label}`}
+                size="small"
+                sx={{
+                  height: 20, fontSize: '0.6rem', fontWeight: 700,
+                  bgcolor: `${ac}1A`,
+                  color: ac,
+                  border: '1px solid',
+                  borderColor: `${ac}40`,
+                }}
+              />
+            );
+          })()}
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.primary', display: 'block', lineHeight: 1.2 }}>{dateStr}</Typography>
             <Typography variant="caption" color="text.disabled" sx={{ display: 'block', fontSize: '0.625rem' }}>W{entry.week} · {timeStr}</Typography>
@@ -131,7 +137,7 @@ function HistoryCard({ entry, onDelete }) {
       <AccordionDetails sx={{ px: 1.25, pt: 0, pb: 1 }}>
         {hasValues
           ? entry.ex.map(e => {
-              const parts = e.sets.filter(s => s.kg || s.reps).map(s => `${s.kg || '–'}×${s.reps || '–'}`);
+              const parts = e.sets.filter(s => s.kg || s.reps).map(s => `${s.kg ? s.kg + ' kg' : '–'} × ${s.reps || '–'}`);
               if (!parts.length) return null;
               return (
                 <Box key={e.id} sx={{ borderTop: '1px solid', borderColor: 'divider', pt: 0.75, pb: 0.5 }}>
@@ -182,7 +188,7 @@ export default function HistoryView({ calMonth, selDay, history, onMonthChange, 
           <Typography variant="body2" color="text.disabled" sx={{ lineHeight: 1.7 }}>
             {selDay
               ? 'Keine Session an diesem Tag.'
-              : <>'Noch keine Sessions gespeichert.<br />Trag dein Training ein und tippe auf{' '}<Box component="span" sx={{ color: 'text.secondary', fontWeight: 600 }}>„Speichern"</Box>.</>
+              : <>Noch keine Sessions gespeichert.<br />Trag dein Training ein und tippe auf{' '}<Box component="span" sx={{ color: 'text.secondary', fontWeight: 600 }}>„Speichern"</Box>.</>
             }
           </Typography>
         </Box>

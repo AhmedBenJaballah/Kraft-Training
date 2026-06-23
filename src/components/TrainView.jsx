@@ -37,36 +37,36 @@ function SetRow({ idx, data, done, onFieldChange, onToggleDone, accent }) {
         size="small"
         type="number"
         inputMode="decimal"
+        placeholder="0"
         value={data?.kg ?? ''}
         onChange={e => onFieldChange('kg', e.target.value)}
         InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <Typography variant="caption" sx={{ fontFamily: 'DM Mono', color: 'text.disabled', fontSize: '0.65rem', userSelect: 'none' }}>
+          endAdornment: (
+            <InputAdornment position="end">
+              <Typography variant="caption" sx={{ fontFamily: 'DM Mono', color: 'text.secondary', fontSize: '0.65rem', userSelect: 'none' }}>
                 kg
               </Typography>
             </InputAdornment>
           ),
         }}
-        sx={{ '& .MuiOutlinedInput-input': { pl: 0.25 } }}
       />
 
       <TextField
         size="small"
         type="number"
         inputMode="numeric"
+        placeholder="0"
         value={data?.reps ?? ''}
         onChange={e => onFieldChange('reps', e.target.value)}
         InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <Typography variant="caption" sx={{ fontFamily: 'DM Mono', color: 'text.disabled', fontSize: '0.65rem', userSelect: 'none' }}>
+          endAdornment: (
+            <InputAdornment position="end">
+              <Typography variant="caption" sx={{ fontFamily: 'DM Mono', color: 'text.secondary', fontSize: '0.65rem', userSelect: 'none' }}>
                 ×
               </Typography>
             </InputAdornment>
           ),
         }}
-        sx={{ '& .MuiOutlinedInput-input': { pl: 0.25 } }}
       />
 
       <Box
@@ -86,7 +86,7 @@ function SetRow({ idx, data, done, onFieldChange, onToggleDone, accent }) {
         }}
       >
         {done && (
-          <CheckIcon sx={{ fontSize: 14, color: accent === '#34D399' ? '#0A0F1E' : '#fff' }} />
+          <CheckIcon sx={{ fontSize: 14, color: ['#34D399', '#F59E0B'].includes(accent) ? '#0A0F1E' : '#fff' }} />
         )}
       </Box>
     </Box>
@@ -131,7 +131,7 @@ function ExerciseCard({ ex, week, log, prev, accent, rir, onSetField, onSetDone 
               key={i}
               sx={{
                 flex: 1, height: '2px', borderRadius: 999,
-                bgcolor: log[i]?.done ? accent : 'rgba(255,255,255,0.09)',
+                bgcolor: log[i]?.done ? accent : 'divider',
               }}
             />
           ))}
@@ -228,8 +228,8 @@ export default function TrainView({ week, day, store, history, onDayChange, onSe
           </AccordionSummary>
           <AccordionDetails sx={{ px: 1.25, pt: 0, pb: 1.25 }}>
             <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.7, display: 'block' }}>
-              <Box component="span" sx={{ color: 'text.primary', fontWeight: 600 }}>Skoliose & Hyperkyphose:</Box> Face Pull + Y-T-Raise als Korrektiv. Kein Flat-Bench, kein OHP, keine Dips.{' '}
-              <Box component="span" sx={{ color: 'text.primary', fontWeight: 600 }}>Beine (Tag B):</Box> Goblet + Bulgaren + Hüftstrecken – wichtigster Block für Körperzusammensetzung.{' '}
+              <Box component="span" sx={{ color: 'text.primary', fontWeight: 600 }}>3-Tages-Split:</Box> A = Zug & Haltung, B = Beine & Bizeps, C = Druck.{' '}
+              <Box component="span" sx={{ color: 'text.primary', fontWeight: 600 }}>Haltung:</Box> Face Pull auf Tag A + C als Korrektiv gegen Hyperkyphose & Skoliose.{' '}
               <Box component="span" sx={{ color: 'text.primary', fontWeight: 600 }}>4-Wochen-Logik:</Box> W1 einpegeln → W2 Wdh+ → W3 Gewicht+ → W4 Deload.
             </Typography>
           </AccordionDetails>

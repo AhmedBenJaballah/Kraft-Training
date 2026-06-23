@@ -25,6 +25,6 @@ export function prevFor(exId, day, history) {
     .sort((a, b) => b.ts - a.ts)[0];
   if (!m) return null;
   const e = m.ex.find(x => x.id === exId);
-  const parts = e.sets.filter(s => s.kg || s.reps).map(s => `${s.kg || '–'}×${s.reps || '–'}`);
+  const parts = e.sets.filter(s => s.kg || s.reps).map(s => `${s.kg ? s.kg + ' kg' : '–'} × ${s.reps || '–'}`);
   return parts.length ? parts.join(' · ') : null;
 }
