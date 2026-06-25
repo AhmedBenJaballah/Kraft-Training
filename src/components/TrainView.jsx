@@ -4,7 +4,6 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Accordion from '@mui/material/Accordion';
@@ -15,11 +14,11 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { PLAN, WEEKS } from '../data/plan';
 import { effSets, prevFor } from '../utils';
 
-function SetRow({ idx, data, done, onFieldChange, onToggleDone, accent }) {
+function SetRow({ idx, data, done, onFieldChange, onToggleDone, accent, isTime }) {
   return (
     <Box sx={{
       display: 'grid',
-      gridTemplateColumns: '16px 1fr 1fr 32px',
+      gridTemplateColumns: isTime ? '16px 1fr 32px' : '16px 1fr 1fr 32px',
       gap: '5px',
       alignItems: 'center',
       opacity: done ? 0.4 : 1,
@@ -33,23 +32,16 @@ function SetRow({ idx, data, done, onFieldChange, onToggleDone, accent }) {
         {idx + 1}
       </Typography>
 
-      <TextField
-        size="small"
-        type="number"
-        inputMode="decimal"
-        placeholder="0"
-        value={data?.kg ?? ''}
-        onChange={e => onFieldChange('kg', e.target.value)}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <Typography variant="caption" sx={{ fontFamily: 'DM Mono', color: 'text.secondary', fontSize: '0.65rem', userSelect: 'none' }}>
-                kg
-              </Typography>
-            </InputAdornment>
-          ),
-        }}
-      />
+      {!isTime && (
+        <TextField
+          size="small"
+          type="number"
+          inputMode="decimal"
+          placeholder="0"
+          value={data?.kg ?? ''}
+          onChange={e => onFieldChange('kg', e.target.value)}
+        />
+      )}
 
       <TextField
         size="small"
@@ -58,15 +50,6 @@ function SetRow({ idx, data, done, onFieldChange, onToggleDone, accent }) {
         placeholder="0"
         value={data?.reps ?? ''}
         onChange={e => onFieldChange('reps', e.target.value)}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <Typography variant="caption" sx={{ fontFamily: 'DM Mono', color: 'text.secondary', fontSize: '0.65rem', userSelect: 'none' }}>
-                ×
-              </Typography>
-            </InputAdornment>
-          ),
-        }}
       />
 
       <Box
@@ -95,6 +78,7 @@ function SetRow({ idx, data, done, onFieldChange, onToggleDone, accent }) {
 
 function ExerciseCard({ ex, week, log, prev, accent, rir, onSetField, onSetDone }) {
   const n = effSets(ex.sets, week);
+  const isTime = ex.reps.includes(' s');
 
   return (
     <Card sx={{ mb: 0.625, position: 'relative', overflow: 'hidden', '&::before': { content: '""', position: 'absolute', top: 0, left: 0, right: 0, height: '2px', bgcolor: accent } }}>
@@ -138,13 +122,20 @@ function ExerciseCard({ ex, week, log, prev, accent, rir, onSetField, onSetDone 
         </Stack>
 
         {/* Sets */}
-        <Stack spacing={0.5} sx={{ mt: 0.875 }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: isTime ? '16px 1fr 32px' : '16px 1fr 1fr 32px', gap: '5px', mt: 0.875, mb: 0.375 }}>
+          <div />
+          {!isTime && <Typography sx={{ fontFamily: 'DM Mono', fontSize: '0.6rem', color: 'text.disabled', textAlign: 'center', userSelect: 'none' }}>kg</Typography>}
+          <Typography sx={{ fontFamily: 'DM Mono', fontSize: '0.6rem', color: 'text.disabled', textAlign: 'center', userSelect: 'none' }}>{isTime ? 'Sek.' : 'Wdh'}</Typography>
+          <div />
+        </Box>
+        <Stack spacing={0.5}>
           {Array.from({ length: n }, (_, s) => (
             <SetRow
               key={s} idx={s}
               data={log[s]}
               done={!!log[s]?.done}
               accent={accent}
+              isTime={isTime}
               onFieldChange={(field, value) => onSetField(ex.id, s, field, value)}
               onToggleDone={() => onSetDone(ex.id, s)}
             />
